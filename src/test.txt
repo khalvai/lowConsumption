@@ -1,0 +1,28 @@
+    let c = 1;
+
+
+    const result = (await fetch(`https://dummyjson.com/comments?limit=20&skip=0&select=body`));
+
+    const body = await result.json();
+
+
+    const comments: CComment[] = body.comments;
+
+
+
+    let str = " ";
+    for (let index = 1; index < 500; index++)
+    {
+
+      for (let j = 0; j < 20; j++, c++)
+      {
+
+
+        str = str.concat(`\n (${ c },"${ comments[ j ].body }",${ index }),`);
+
+
+      }
+
+      await fs.appendFile(path.join(__dirname, "test.txt"), str);
+      str = " ";
+    }

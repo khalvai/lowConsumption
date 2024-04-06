@@ -1,0 +1,52 @@
+version: "3.8"
+
+services: 
+   
+  api:
+      build:
+        context: ./
+        dockerfile: Dockerfile
+      container_name: api
+      restart: always
+      volumes:
+       - .:/app
+      depends_on:
+         - db 
+      ports:
+        - '4000:4000'
+  db:
+      image: postgres
+      restart: always
+      environment:
+        POSTGRES_PASSWORD: postgresPass
+        POSTGRES_USER: postgresUser
+        POSTGRES_DB: PresentationDB
+      volumes:
+         - ./PresentationDBData:/var/lib/postgresql
+      ports:
+         - 5433:5432
+
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+    networks:
+      - prometheus-network
+    volumes:
+      - '/:/host:ro,rslave'
+    
+networks:
+  prometheus-network:
+    driver: bridge
+volumes:
+      PresentationDBData:
+      prometheus-data:
+        driver: local
+      grafana-data:
+        driver: local
