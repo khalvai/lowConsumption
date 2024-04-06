@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 
 services: 
    
@@ -36,14 +36,11 @@ services:
     ports:
       - "9100:9100"
     restart: unless-stopped
-    networks:
-      - prometheus-network
+ 
     volumes:
       - '/:/host:ro,rslave'
     
-networks:
-  prometheus-network:
-    driver: bridge
+
 volumes:
       PresentationDBData:
       prometheus-data:
