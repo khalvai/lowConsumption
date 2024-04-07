@@ -1,8 +1,11 @@
 version: "3.3"
 
 services: 
-   
+
+
   api:
+      depends_on:
+      - db
       build:
         context: ./
         dockerfile: Dockerfile
@@ -11,15 +14,15 @@ services:
       restart: always
       volumes:
        - .:/app
-      depends_on:
-         - db 
       ports:
         - '4000:4000'
-      networks:
-       - api-network
+      networks: 
+      - node-network
+
   db:
       image: postgres
       restart: always
+      container_name: db
       environment:
         POSTGRES_PASSWORD: postgresPass
         POSTGRES_USER: postgresUser
@@ -28,9 +31,10 @@ services:
          - ./PresentationDBData:/var/lib/postgresql
       ports:
          - 5433:5432
-      networks:
-       - api-network
- 
+      networks: 
+      - node-network
+    
+
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
@@ -43,11 +47,7 @@ services:
     restart: unless-stopped
  
     volumes:
-      - '/:/host:ro,rslave'
-
-networks:
-   api-network:
-   driver: bridge
+      - '/:/host:ro,rslave' 
     
 
 volumes:
@@ -56,3 +56,7 @@ volumes:
         driver: local
       grafana-data:
         driver: local
+
+networks: 
+  node-network:
+    driver: bridge

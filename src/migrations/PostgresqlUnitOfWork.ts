@@ -16,7 +16,7 @@ export class PostgresqlUnitOfWork
             user: "postgresUser",
             password: "postgresPass",
             host: "db",
-            port: 5432,
+            port: 5433,
         });
     }
 
@@ -26,6 +26,9 @@ export class PostgresqlUnitOfWork
         {
             return PostgresqlUnitOfWork.connection;
         }
+
+        console.log(PostgresqlUnitOfWork.pool);
+
         PostgresqlUnitOfWork.connection =
             await PostgresqlUnitOfWork.pool.connect();
 

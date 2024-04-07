@@ -7,7 +7,7 @@ export const migration = async function (): Promise<unknown>
         user: "postgresUser",
         password: "postgresPass",
         host: "db",
-        port: 5432,
+        port: 5433,
         ensureDatabaseExists: true,
         defaultDatabase: 'postgres',
     };
@@ -21,7 +21,7 @@ export const down = async function (): Promise<unknown>
         user: "postgresUser",
         password: "postgresPass",
         host: "db",
-        port: 5432,
+        port: 5433,
         ensureDatabaseExists: true,
         defaultDatabase: 'postgres',
     };
