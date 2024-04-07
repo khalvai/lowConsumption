@@ -11,11 +11,12 @@
 
     COPY . .
 
-    RUN npm build
 
 
     # Install app dependencies
     RUN  npm install
+
+    RUN npx nest build
   
 
     COPY . .
