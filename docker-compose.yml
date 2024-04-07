@@ -5,7 +5,7 @@ services:
   api:
       build:
         context: ./
-        dockerfile: Dockerfilet
+        dockerfile: Dockerfile
         target: production
       container_name: api
       restart: always
@@ -47,6 +47,8 @@ services:
 
 networks:
    api-network:
+   driver: bridge
+    
 
 volumes:
       PresentationDBData:
