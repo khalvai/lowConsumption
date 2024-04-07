@@ -5,7 +5,8 @@ services:
   api:
       build:
         context: ./
-        dockerfile: Dockerfile
+        dockerfile: Dockerfilet
+        target: production
       container_name: api
       restart: always
       volumes:
