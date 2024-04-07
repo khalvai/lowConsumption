@@ -15,7 +15,7 @@ export class PostgresqlUnitOfWork
             database: "PresentationDB",
             user: "postgresUser",
             password: "postgresPass",
-            host: "db",
+            host: "localhost",
             port: 5432,
         });
     }
