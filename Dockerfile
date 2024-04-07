@@ -7,14 +7,22 @@
     # A wildcard is used to ensure both package.json AND package-lock.json are copied
     COPY package*.json ./
 
+    RUN npm install --only=production  # Install production dependencies only
+
+    COPY . .
+
+    RUN npm build
+
+
     # Install app dependencies
-    RUN npm install
+    RUN  npm install
   
 
     COPY . .
 
 
 
-
-    EXPOSE 3000
-    CMD [ "npm", "run", "dev" ]
+ 
+   EXPOSE 3000
+   CMD [ "npm", "run", "start:prod" ]
+   
