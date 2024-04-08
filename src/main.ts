@@ -4,8 +4,8 @@ import { migration } from './migrations/migrate';
 async function bootstrap(): Promise<void>
 {
 
-  console.log("hi from docker");
   const app = await NestFactory.create(AppModule);
+
 
 
 

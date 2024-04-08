@@ -11,12 +11,14 @@ export class PostgresqlUnitOfWork
         {
             throw new Error('Connection already exists');
         }
+
+
         PostgresqlUnitOfWork.pool = new Pool({
             database: "PresentationDB",
             user: "postgresUser",
             password: "postgresPass",
-            host: "db",
-            port: 5433,
+            host: "localhost",
+            port: 5432,
         });
     }
 
@@ -27,7 +29,6 @@ export class PostgresqlUnitOfWork
             return PostgresqlUnitOfWork.connection;
         }
 
-        console.log(PostgresqlUnitOfWork.pool);
 
         PostgresqlUnitOfWork.connection =
             await PostgresqlUnitOfWork.pool.connect();

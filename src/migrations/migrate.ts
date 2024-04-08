@@ -6,11 +6,13 @@ export const migration = async function (): Promise<unknown>
         database: "PresentationDB",
         user: "postgresUser",
         password: "postgresPass",
-        host: "db",
-        port: 5433,
+        host: "localhost",
+        port: 5432,
         ensureDatabaseExists: true,
         defaultDatabase: 'postgres',
     };
+
+
 
     return await migrate(dbConfig, process.cwd() + '/src/migrations');
 };
@@ -20,14 +22,13 @@ export const down = async function (): Promise<unknown>
         database: "PresentationDB",
         user: "postgresUser",
         password: "postgresPass",
-        host: "db",
-        port: 5433,
+        host: "localhost",
+        port: 5432,
         ensureDatabaseExists: true,
         defaultDatabase: 'postgres',
     };
 
-    return await migrate(
-        dbConfig,
-        process.cwd() + "/src/migrations"
-    );
+
+
+    return await migrate(dbConfig, process.cwd() + '/src/migrations');
 };
