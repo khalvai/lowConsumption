@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { PoolClient } from "pg";
-import { IPoolClient } from "src/migrations/ConnectionInterface";
+import { IPoolClient } from "src/db/ConnectionInterface";
 
 export interface Article
 {

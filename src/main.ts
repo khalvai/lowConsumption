@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { migration } from './migrations/migrate';
+import { migration } from './db/migrate';
 async function bootstrap(): Promise<void>
 {
 

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { IPoolClient } from 'src/migrations/ConnectionInterface';
-import { PostgresqlUnitOfWork } from 'src/migrations/PostgresqlUnitOfWork';
+import { IPoolClient } from 'src/db/ConnectionInterface';
+import { PostgresqlUnitOfWork } from 'src/db/PostgresqlUnitOfWork';
 
 @Module({
   imports: [

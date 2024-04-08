@@ -19,6 +19,8 @@ FROM node:20-alpine As build
 
 WORKDIR /usr/src/app
 
+COPY --chown=node:node data ./
+
 COPY --chown=node:node package*.json ./
 
 COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
@@ -40,6 +42,6 @@ FROM node:20-alpine As production
 
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-
+COPY --chown=node:node --from=build /usr/src/app/data ./data
 # start the server
 CMD [ "node", "dist/main.js" ]
