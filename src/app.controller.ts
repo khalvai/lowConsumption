@@ -17,7 +17,6 @@ export class AppController
   public async getPostWithTags2(@Param("userId", ParseIntPipe) userId: number): Promise<unknown[] | void>
   {
 
-    console.log("jere");
 
     return this.appService.getPostWithTags2(userId);
   }
