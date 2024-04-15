@@ -18,7 +18,7 @@ export interface Comment
 
 export interface ResponseArticle extends Article
 {
-  comments: Comment[];
+  comments?: Comment[];
 
 }
 
@@ -50,16 +50,66 @@ export class AppService
 
     }
 
+    return responseArticles;
+
+  }
+
+  public async getPostWithTags2(userId: number): Promise<unknown[]>
+  {
+
+
+    const articles = (await this.connection.query(`SELECT * FROM articles WHERE author_id=${ userId };`)).rows as Article[];
+
+    const articleIds: number[] = [];
+
+
+    for (const article of articles)
+    {
+      articleIds.push(article.id);
+
+    }
+
+
+    const query = `(${ articleIds.join(',') })`;
 
 
 
+    const comments = (await this.connection.query(`SELECT * FROM comments WHERE article_id IN ${ query }`)).rows as Comment[];
+
+
+    const responseArticles: ResponseArticle[] = [];
+
+
+    for (const article of articles)
+    {
+
+      const responseArticle: ResponseArticle = {
+        id: article.id,
+        title: article.title,
+        content: article.content,
+        author_id: article.author_id,
+        comments: []
+      };
+      for (const comment of comments)
+      {
+
+        if (comment.article_id === article.id)
+        {
+
+          responseArticle.comments.push({
+            id: comment.id,
+            body: comment.body,
+            article_id: comment.article_id
+          });
+
+        }
+      }
+      responseArticles.push(responseArticle);
+
+    }
 
     return responseArticles;
 
-
-
   }
 }
-
-
 
