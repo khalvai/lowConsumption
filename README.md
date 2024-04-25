@@ -1,73 +1,105 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+## A project for educational purpose to demonstrate Monitoring Concepts
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## What is monitoring ?
 
-## Description
+        >   "collecting, processing, aggregating, and displaying real-time quantitative data about your system." -- Google SRE book.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+        >   "need to observe your systems to get insight  into: request/event rate, Latency, Errors, Resource usage, temperature .. and
+            then react when something looks bad." -- prometheus Co-founder
 
-## Installation
+## Technology Used:
 
-```bash
-$ npm install
-```
+-   **node_exporter** : a tool to expose state of server,such as cpu and memory usage of server to be scraped and used by other parts.
+-   **prometheus** : is a free software application used for event monitoring and alerting. It records metrics in a time series database built using an HTTP pull model from node_exporter(in this scenario).
+-   **Grafana**: is a multi-platform open source analytics and interactive visualization web application, the project used prometheus as data sourcse for grafan, to visualize sever status
 
-## Running the app
+-   **Docker**: is a set of platform as a service products that use OS-level virtualization to deliver software in packages called container, project used grafana,prometheus and exporter image (main focus)
+-   **locust**: An open source load testing tool.
 
-```bash
-# development
-$ npm run start
+## Architecture of grafana and prometheus explained
 
-# watch mode
-$ npm run start:dev
+-   observer effect: is the disturbance of an observed system by the act of observation.
+-   in the right hand architecture, we have a lot of observer effect, it means our targe sever will periodically pushes server state to a time series data base, which leads to use most of our cpu usage to do that.
 
-# production mode
-$ npm run start:prod
-```
+-   we implement the left hand architecture, with node_exporter we expose server status to other part, so prometheus will scrap those data and saves into a database then our grana will use those data to visulaize.
+    ![second approach grafana](/pictures/grafan_prometheus_artchitecure.png)
 
-## Test
+## what we supposed to do in order to demonstrate this concept?
 
-```bash
-# unit tests
-$ npm run test
+-   we want to monitor a server to watch realtime data while load testing.
+-   for this purpose, we need some dummy data and an application to query on the data.
+-   user, article and comment table, each user can have multiple articles and each article can have multiple comments.
+-   we want to retrieve all user articles and their corresponding comments.
+-   we can solve this problem with two approach:
+-   let's see which one is efficient and server state for each approach while load testing.
 
-# e2e tests
-$ npm run test:e2e
+-   each approach is explained:
 
-# test coverage
-$ npm run test:cov
-```
+1.  firs approach:
 
-## Support
+    -   one query executed to get all articles of user:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+        > `` const articles = (await this.connection.query(`SELECT * FROM articles WHERE author_id=${ userId };`)).rows as Article[];``
 
-## Stay in touch
+    -   second query executed to get a post comment
+        > ``const comments = (await this.connection.query(`SELECT * FROM comments WHERE article_id=${ articles[ 0 ].id }`)).rows as Comment[];``
+    -   for getting comments for all articles, we need a for loop to execute second query for multiple times.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+![first approach](/pictures/firstApproach.png)
 
-## License
+2. second approach
 
-  Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+    - one query executed to get all articles of user:
+
+        > `` const articles = (await this.connection.query(`SELECT * FROM articles WHERE author_id=${ userId };`)).rows as Article[];``
+
+    - second query executed to get all comments IN post ids (array of post ids)
+
+        > `` const comments = (await this.connection.query(`SELECT * FROM comments WHERE article_id IN ${query}`)).rows as Comment[];``
+
+    - a method call to match comments to their article
+
+![second approach](/pictures/secondApproach.png)
+
+## how to run
+
+1.  make sure you have installed docker
+2.  > $ git clone https://github.com/khalvai/lowConsumption.git
+3.  > $ cd lowConsumption/project
+4.  > $ docker compose build
+5.  > $ docker compose up -d
+
+-   after running successful you can request to http://localhost:4000/firstApproach/3 to get all articles and comments of user 3. or also test second approach by http://localhost:4000/secondApproach/3.
+
+## load testing
+
+1. first approach load testing and results.
+
+-   locust chart
+
+![first approach locust](/pictures/total_requests_per_second_1714026533.3.png)
+
+-   grafana panel
+
+![first approach grafana](/pictures/grafan_1.png)
+
+2. second approach load testing and results
+
+-   locust chart
+
+![second approach locust](/pictures/total_requests_per_second_2.png)
+
+-   grafana panel
+
+![second approach grafana](/pictures/grafana_2.png)
+
+## results
+
+-   as we can see in locust chart average response time for first approach is approximately 15 s, and average response time for second approach is 5 s.
+-   as grafana panel shows cpu usage and memory usage of grafana and prometheus. we have better state in second approach with same load testing condition
+
+## N + 1 problem
+
+-   N+1 queries are a performance problem in which the application makes database queries in a loop, instead of making a single query that returns or modifies all the information at once.
+
+-   second approach solved this problem, instead of making several queries for retrieving comments, executes just one.
