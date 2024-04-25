@@ -2,10 +2,17 @@
 
 ## What is monitoring ?
 
-        >   "collecting, processing, aggregating, and displaying real-time quantitative data about your system." -- Google SRE book.
+        >   "collecting, processing, aggregating, and displaying
+             real-time quantitative data about your system."
 
-        >   "need to observe your systems to get insight  into: request/event rate, Latency, Errors, Resource usage, temperature .. and
-            then react when something looks bad." -- prometheus Co-founder
+             -- Google SRE book.
+
+        >   "need to observe your systems to get insight  into:
+             request/event rate, Latency, Errors, Resource usage, temperature ..
+             and
+             then react when something looks bad."
+
+             -- prometheus Co-founder
 
 ## Technology Used:
 
