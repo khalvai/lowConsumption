@@ -2,44 +2,39 @@ import { Inject, Injectable } from "@nestjs/common";
 import { PoolClient } from "pg";
 import { IPoolClient } from "src/db/ConnectionInterface";
 
-export interface Article
-{
+export interface Article {
   id: number;
   title: string;
   content: string;
   author_id: number;
 }
-export interface Comment
-{
+export interface Comment {
   id: number;
   body: string;
   article_id: number;
 }
 
-export interface ResponseArticle extends Article
-{
+export interface ResponseArticle extends Article {
   comments?: Comment[];
 
 }
 
 @Injectable()
-export class AppService
-{
+export class AppService {
 
-  public constructor (@Inject(IPoolClient) private readonly connection: PoolClient)
-  {
+  public constructor(@Inject(IPoolClient) private readonly connection: PoolClient) {
   }
-  public async getPostWithTags(userId: number): Promise<unknown[]>
-  {
 
 
-    const articles = (await this.connection.query(`SELECT * FROM articles WHERE author_id=${ userId };`)).rows as Article[];
+  public async getArticlesWithComments(userId: number): Promise<ResponseArticle[]> {
+
+    const articles = (await this.connection.query(`SELECT * FROM articles WHERE author_id=${userId};`)).rows as Article[];
 
     const responseArticles: ResponseArticle[] = [];
-    for (const article of articles)
-    {
 
-      const comments = (await this.connection.query(`SELECT * FROM comments WHERE article_id=${ articles[ 0 ].id }`)).rows as Comment[];
+    for (const article of articles) {
+
+      const comments = (await this.connection.query(`SELECT * FROM comments WHERE article_id=${articles[0].id}`)).rows as Comment[];
 
       responseArticles.push({
         ...article,
@@ -47,41 +42,45 @@ export class AppService
 
       });
 
-
     }
 
     return responseArticles;
 
   }
 
-  public async getPostWithTags2(userId: number): Promise<unknown[]>
-  {
+  public async getArticlesWithComments2(userId: number): Promise<unknown[]> {
 
 
-    const articles = (await this.connection.query(`SELECT * FROM articles WHERE author_id=${ userId };`)).rows as Article[];
+    const articles = (await this.connection.query(`SELECT * FROM articles WHERE author_id=${userId};`)).rows as Article[];
 
     const articleIds: number[] = [];
 
 
-    for (const article of articles)
-    {
+    for (const article of articles) {
       articleIds.push(article.id);
 
     }
 
 
-    const query = `(${ articleIds.join(',') })`;
+    const query = `(${articleIds.join(',')})`;
 
 
 
-    const comments = (await this.connection.query(`SELECT * FROM comments WHERE article_id IN ${ query }`)).rows as Comment[];
+    const comments = (await this.connection.query(`SELECT * FROM comments WHERE article_id IN ${query}`)).rows as Comment[];
+
+
+    const responseArticles: ResponseArticle[] = this.matchCommentsToArticle(articles, comments)
+    return responseArticles;
+
+  }
+
+  private matchCommentsToArticle(articles: Article[], comments: Comment[]): ResponseArticle[] {
 
 
     const responseArticles: ResponseArticle[] = [];
 
 
-    for (const article of articles)
-    {
+    for (const article of articles) {
 
       const responseArticle: ResponseArticle = {
         id: article.id,
@@ -90,11 +89,9 @@ export class AppService
         author_id: article.author_id,
         comments: []
       };
-      for (const comment of comments)
-      {
+      for (const comment of comments) {
 
-        if (comment.article_id === article.id)
-        {
+        if (comment.article_id === article.id) {
 
           responseArticle.comments.push({
             id: comment.id,
@@ -109,7 +106,8 @@ export class AppService
     }
 
     return responseArticles;
-
   }
+
+
 }
 
